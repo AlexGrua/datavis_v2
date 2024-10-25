@@ -1,9 +1,13 @@
 
+
+
+
+<!-- PROJECT LOGO -->
 <a id="readme-top"></a>
 <br />
 <div align="center">
   <a href="https://github.com/AlexGrua/Boika_Aliaksandr/blob/main/images/logo2.png">
-    <img src="https://github.com/AlexGrua/Boika_Aliaksandr/blob/main/images/logo2.png" alt="Logo" width="400" height="350">
+    <img src="https://github.com/AlexGrua/Boika_Aliaksandr/blob/main/images/logo2.png" alt="Logo" width="300" height="240">
   </a>
 
 <h3 align="center">ВИЗУАЛИЗАЦИЯ ЦИФРОВЫХ ДАННЫХ</h3>
@@ -56,15 +60,19 @@ Data Vis предоставляет возможность визуализац�
 <!-- Usage -->
 ## Пример использования Проекта
 
-1. Создание учетной записи/вход в учетную запись на сайте
+**1. Создание учетной записи/вход в учетную запись на сайте**
 
 <a href="https://github.com/AlexGrua/Boika_Aliaksandr/blob/main/images/login.png">
     <img src="https://github.com/AlexGrua/Boika_Aliaksandr/blob/main/images/login.png" alt="Logo" width="1000" height="400">
 </a>
 
 <br />
+<br />
+<br />
+<br />
 
-2. Загрузка Excel-файла или ссылки на Google-таблицы с «raw data
+
+**2. Загрузка Excel-файла или ссылки на Google-таблицы с "raw data"**
 
    
 <a href="https://github.com/AlexGrua/Boika_Aliaksandr/blob/main/images/upload.png">
@@ -72,27 +80,39 @@ Data Vis предоставляет возможность визуализац�
 </a>
 
 <br />
+<br />
+<br />
+<br />
 
-3. Выбор нужных для визуализации данных 
+
+**3. Выбор нужных для визуализации данных**
 
 
    
 <a href="https://github.com/AlexGrua/Boika_Aliaksandr/blob/main/images/select.png">
-    <img src="https://github.com/AlexGrua/Boika_Aliaksandr/blob/main/images/select.png" alt="Logo" width="1000" height="625">
+    <img src="https://github.com/AlexGrua/Boika_Aliaksandr/blob/main/images/select.png" alt="Logo" width="1000" height="725">
 </a>
 
 <br />
+<br />
+<br />
+<br />
 
-4. Выбор нужного типа визуализации
+
+**4. Выбор нужного типа визуализации**
 
    
 <a href="https://github.com/AlexGrua/Boika_Aliaksandr/blob/main/images/charts.png">
-    <img src="https://github.com/AlexGrua/Boika_Aliaksandr/blob/main/images/charts.png" alt="Logo" width="1000" height="500">
+    <img src="https://github.com/AlexGrua/Boika_Aliaksandr/blob/main/images/charts.png" alt="Logo" width="1000" height="460">
 </a>
 
 <br />
+<br />
+<br />
+<br />
 
-5. Получение целевого визуала
+
+**5. Получение целевого визуала**
 
 
    
@@ -101,8 +121,12 @@ Data Vis предоставляет возможность визуализац�
 </a>
 
 <br />
+<br />
+<br />
+<br />
 
-6. Сохранение нужного графика или его шеринг по отдельной ссылке
+
+**6. Сохранение нужного графика или его шеринг по отдельной ссылке**
 
 
    
@@ -111,12 +135,9 @@ Data Vis предоставляет возможность визуализац�
 </a>
 
 <br />
-
-
-
-
-
-  
+<br />
+<br />
+<br />
 
 
    
