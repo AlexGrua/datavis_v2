@@ -1,0 +1,66 @@
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+{% if messages %}
+    <ul class="message-list">
+        {% for message in messages %}
+            <li class="alert alert-danger">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %} 
+
+
+    {% if file_id %}
+    <div class="text-center my-3">
+        <a href="{% url 'upload' %}" class="btn btn-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Upload</a>
+        <a href="{% url 'process_file' file_id=file_id %}" class="btn btn-outline-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Select your Data</a> 
+        <a href="{% url 'charts' file_id=file_id %}" class="btn btn-outline-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Charts</a> 
+        <a href="{% url 'dashboard' file_id=file_id %}" class="btn btn-outline-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Visualization</a> 
+    </div>
+    {% else %}
+    <div class="text-center my-3">
+        <a href="{% url 'upload' %}" class="btn btn-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Upload</a>
+    </div>
+    {% endif %}
+
+    <hr style="border: 2px black; border-style: dashed;">
+    <hr class="my-3">
+
+
+    <h4>Upload Excel File</h4>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary mx-2 btn-lg">Upload Excel File</button>
+    </form>
+
+    <hr class="my-3">
+    <hr class="my-3">
+
+    <hr style="border: 2px black; border-style: dashed;">
+    <hr class="my-3">
+
+    
+    <h4>Enter URL for Google Sheets</h4>
+
+    <p>To upload data from Google Sheets:</p>
+    <ol>
+        <li>Open your Google Sheet.</li>
+        <li>Click on "Share" and make sure the link is accessible to anyone with the link.</li>
+        <li>Copy the link below and paste it in the field provided.</li>
+        <li>Make sure you provide Data in as Excel format</li>
+    </ol>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="google_sheets_link">Google Sheets Link: </label>
+            <input type="text" name="google_sheets_link" id="google_sheets_link" class="form-control" style='width: 1000px' placeholder="Enter Google Sheets link here" >
+        </div>
+        
+        <button type="submit" class="btn btn-success mx-2 btn-lg">Fetch Data from Google Sheets</button>
+    </form>
+
+{% endblock %}

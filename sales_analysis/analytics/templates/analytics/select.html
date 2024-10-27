@@ -1,0 +1,173 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<div class="container">
+
+    {% if messages %}
+        <ul class="message-list">
+            {% for message in messages %}
+                <li class="alert alert-danger">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if file_id %}
+    <div class="text-center my-3">
+        <a href="{% url 'upload' %}" class="btn btn-outline-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Upload</a>
+        <a href="{% url 'process_file' file_id=file_id %}" class="btn btn-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Select your Data</a> 
+        <a href="{% url 'charts' file_id=file_id %}" class="btn btn-outline-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Charts</a> 
+        <a href="{% url 'dashboard' file_id=file_id %}" class="btn btn-outline-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Visualization</a> 
+    </div>
+    {% else %}
+    <div class="text-center my-3">
+        <a href="{% url 'upload' %}" class="btn btn-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Upload</a>
+    </div>
+    {% endif %}
+
+    <hr style="border: 2px black; border-style: dashed;">
+    <hr class="my-3">
+
+    <form method="post" style="margin-top: 20px; margin-left: 20px; display: flex; justify-content: space-between; align-items: center;">
+        {% csrf_token %}
+        <div style="display: flex; flex-wrap: wrap;">
+            {% for header in headers %}
+                <div class="form-check" style="margin-right: 15px;">
+                    <input class="form-check-input" type="checkbox" name="selected_headers" value="{{ header }}" id="header_{{ forloop.counter }}" style="transform: scale(1.5);" 
+                        onclick="updateHeaderColor('header_{{ forloop.counter }}', 'header-th-{{ forloop.counter }}')"> 
+                    <label class="form-check-label" for="header_{{ forloop.counter }}" style="font-size: 20px;">{{ header }}</label> 
+                </div>
+            {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-dark mx-2 btn-lg" style="color: aqua">Proceed to Charts</button>
+    </form>
+
+    <div class="text-center my-3" style="margin-top: 20px;">
+        <div class="dropdown" style="display: inline-block;">
+            <button class="btn btn-info" type="button" id="sortViewButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 200px; height: 40px;" onclick="toggleSortMenu()">
+                Sort View by:
+            </button>
+            <div class="dropdown-menu" id="sortOptions" aria-labelledby="sortViewButton">
+                {% for header in headers %}
+                    <div class="dropdown-item" onclick="sortTable('{{ header }}', 'asc')">
+                        {{ header }} &#9650; (Ascending)
+                    </div>
+                    <div class="dropdown-item" onclick="sortTable('{{ header }}', 'desc')">
+                        {{ header }} &#9660; (Descending)
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <button class="btn btn-info" onclick="transposeTable()" style="width: 200px; height: 40px; margin-left: 10px;">Transpose Table</button>
+    </div>
+
+    <div class="data-table-container" style="margin-top: 20px;">
+        <table class="table table-bordered" style="width: 100%;" id="data-table">
+            <thead>
+                <tr>
+                    {% for header in headers %}
+                        <th id="header-th-{{ forloop.counter }}" onclick="toggleCheckbox('header_{{ forloop.counter }}', this)" style="cursor: pointer;">{{ header }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                    <tr>
+                        {% for cell in row %}
+                            <td>{{ cell }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    function toggleSortMenu() {
+        const sortOptions = document.getElementById('sortOptions');
+        sortOptions.style.display = sortOptions.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function sortTable(header, order) {
+        const table = document.getElementById('data-table');
+        const tbody = table.tBodies[0];
+        const rows = Array.from(tbody.rows);
+
+        const headerIndex = Array.from(table.rows[0].cells).findIndex(cell => cell.innerText === header);
+        
+        rows.sort((a, b) => {
+            const aText = a.cells[headerIndex].innerText;
+            const bText = b.cells[headerIndex].innerText;
+
+            return order === 'asc' ? aText.localeCompare(bText) : bText.localeCompare(aText);
+        });
+
+    
+        while (tbody.rows.length) {
+            tbody.deleteRow(0);
+        }
+        rows.forEach(row => tbody.appendChild(row));
+        
+
+        sortOptions.style.display = 'none';
+    }
+
+    function toggleCheckbox(checkboxId, headerElement) {
+        const checkbox = document.getElementById(checkboxId);
+        checkbox.checked = !checkbox.checked; 
+        updateHeaderColor(checkboxId, headerElement.id); 
+    }
+
+    function updateHeaderColor(checkboxId, headerId) {
+        const checkbox = document.getElementById(checkboxId);
+        const headerElement = document.getElementById(headerId);
+
+       
+        if (checkbox.checked) {
+            headerElement.style.backgroundColor = 'lightblue'; 
+        } else {
+            headerElement.style.backgroundColor = ''; 
+        }
+    }
+
+    function transposeTable() {
+        const table = document.getElementById('data-table');
+        const rows = Array.from(table.rows);
+        const transposedData = [];
+
+        for (let i = 0; i < rows[0].cells.length; i++) {
+            transposedData[i] = [];
+            for (let j = 0; j < rows.length; j++) {
+                transposedData[i][j] = rows[j].cells[i].innerHTML;
+            }
+        }
+
+        while (table.rows.length) {
+            table.deleteRow(0);
+        }
+
+
+        const thead = table.createTHead();
+        const headerRow = thead.insertRow();
+        for (const header of transposedData[0]) {
+            const th = document.createElement('th');
+            th.innerHTML = header;
+            headerRow.appendChild(th);
+        }
+
+       
+        const tbody = table.createTBody();
+        for (let i = 1; i < transposedData.length; i++) {
+            const row = tbody.insertRow();
+            for (const cell of transposedData[i]) {
+                const td = row.insertCell();
+                td.innerHTML = cell;
+            }
+        }
+    }
+</script>
+
+{% endblock %}

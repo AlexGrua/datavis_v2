@@ -1,0 +1,170 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+{% if file_id %}
+<div class="text-center my-3">
+    <a href="{% url 'upload' %}" class="btn btn-outline-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Upload</a>
+    <a href="{% url 'process_file' file_id=file_id %}" class="btn btn-outline-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Select your Data</a> 
+    <a href="{% url 'charts' file_id=file_id %}" class="btn btn-outline-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Charts</a> 
+    <a href="{% url 'dashboard' file_id=file_id %}" class="btn btn-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Visualization</a> 
+</div>
+{% else %}
+<div class="text-center my-3">
+    <a href="{% url 'upload' %}" class="btn btn-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Upload</a>
+</div>
+{% endif %}
+
+    <hr style="border: 2px black; border-style: dashed;">
+    <hr class="my-3">
+
+    <div class="button-container">
+        {% if 'line_chart' in selected_visualizations %}
+            <button onclick="showGraph('line_chart', this)" class="btn btn-info mx-2">{{ titles.line_chart }}</button>
+        {% endif %}
+        {% if 'pie_chart' in selected_visualizations %}
+            <button onclick="showGraph('pie_chart', this)" class="btn btn-info mx-2">{{ titles.pie_chart }}</button>
+        {% endif %}
+        {% if 'column_chart' in selected_visualizations %}
+            <button onclick="showGraph('column_chart', this)" class="btn btn-info mx-2">{{ titles.column_chart }}</button>
+        {% endif %}
+        {% if 'bubble_chart' in selected_visualizations %}
+            <button onclick="showGraph('bubble_chart', this)" class="btn btn-info mx-2">{{ titles.bubble_chart }}</button>
+        {% endif %}
+        {% if 'histogram' in selected_visualizations %}
+            <button onclick="showGraph('histogram', this)" class="btn btn-info mx-2">{{ titles.histogram }}</button>
+        {% endif %}
+        {% if 'pivot_table' in selected_visualizations %}
+            <button onclick="showGraph('pivot_table', this)" class="btn btn-info mx-2">{{ titles.pivot_table }}</button>
+        {% endif %}
+    </div>
+
+    {% if 'line_chart' in selected_visualizations %}
+        <div id="line_chart" class="graph-container" style="display:none;">{{ graphs.line_chart|safe }}
+            <div class="share-container" style="display:none; text-align:center; margin-top:10px;">
+                <button onclick="shareChart('line_chart', '{{ file_id }}')" class="btn btn-success">Share this chart</button>
+            </div>
+        </div>
+    {% endif %}
+    {% if 'pie_chart' in selected_visualizations %}
+        <div id="pie_chart" class="graph-container" style="display:none;">{{ graphs.pie_chart|safe }}
+            <div class="share-container" style="display:none; text-align:center; margin-top:10px;">
+                <button onclick="shareChart('pie_chart', '{{ file_id }}')" class="btn btn-success">Share this chart</button>
+            </div>
+        </div>
+    {% endif %}
+    {% if 'column_chart' in selected_visualizations %}
+        <div id="column_chart" class="graph-container" style="display:none;">{{ graphs.column_chart|safe }}
+            <div class="share-container" style="display:none; text-align:center; margin-top:10px;">
+                <button onclick="shareChart('column_chart', '{{ file_id }}')" class="btn btn-success">Share this chart</button>
+            </div>
+        </div>
+    {% endif %}
+    {% if 'bubble_chart' in selected_visualizations %}
+        <div id="bubble_chart" class="graph-container" style="display:none;">{{ graphs.bubble_chart|safe }}
+            <div class="share-container" style="display:none; text-align:center; margin-top:10px;">
+                <button onclick="shareChart('bubble_chart', '{{ file_id }}')" class="btn btn-success">Share this chart</button>
+            </div>
+        </div>
+    {% endif %}
+    {% if 'histogram' in selected_visualizations %}
+        <div id="histogram" class="graph-container" style="display:none;">{{ graphs.histogram|safe }}
+            <div class="share-container" style="display:none; text-align:center; margin-top:10px;">
+                <button onclick="shareChart('histogram', '{{ file_id }}')" class="btn btn-success">Share this chart</button>
+            </div>
+        </div>
+    {% endif %}
+    {% if 'pivot_table' in selected_visualizations %}
+        <div id="pivot_table" class="graph-container" style="display:none;">
+            <div class="data-table-container">
+                <table>
+                    {{ graphs.pivot_table|safe }}
+                </table>
+            </div>
+            <div class="share-container" style="display:none; text-align:center; margin-top:10px;">
+                <button onclick="shareChart('pivot_table', '{{ file_id }}')" class="btn btn-success">Share this table</button>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+{% block scripts %}
+    {{ block.super }}  
+    <script type='text/javascript'>
+       
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        function showGraph(graphType, button) {
+            var graphs = document.getElementsByClassName('graph-container');
+            for (var i = 0; i < graphs.length; i++) {
+                graphs[i].style.display = 'none';
+            }
+            document.getElementById(graphType).style.display = 'block';
+
+            var shareContainers = document.getElementsByClassName('share-container');
+            for (var i = 0; i < shareContainers.length; i++) {
+                shareContainers[i].style.display = 'none';
+            }
+   
+            var shareContainer = document.querySelector(`#${graphType} .share-container`);
+            if (shareContainer) {
+                shareContainer.style.display = 'block';
+            }
+
+            var buttons = document.querySelectorAll('.button-container button');
+            buttons.forEach(btn => btn.classList.remove('button-pressed'));
+            button.classList.add('button-pressed');
+        }
+
+        function shareChart(chartType, fileId) {
+            fetch(`/analytics/share_chart/${fileId}/${chartType}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken 
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    const chartFileName = data.chart_file_name; 
+                    const shareUrl = `http://127.0.0.1:8000/media/shared_charts/${chartFileName}`;
+                    showModal(shareUrl);
+                } else {
+                    alert('Error generating share link: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert('An error occurred while sharing the chart: ' + error.message);
+            });
+        }
+
+        function showModal(shareUrl) {
+            const shareLinkText = document.getElementById('shareLinkText');
+            shareLinkText.innerHTML = `<a href="${shareUrl}" target="_blank">${shareUrl}</a>`;
+            document.getElementById('shareLinkModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('shareLinkModal').style.display = 'none';
+        }
+
+        function copyToClipboard() {
+            const shareUrl = document.getElementById('shareLinkText').innerText;
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                alert('Link copied to clipboard!');
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+            });
+        }
+    
+        {% if selected_visualizations %}
+            showGraph('{{ selected_visualizations.0 }}');
+        {% endif %}
+    </script>
+{% endblock %}

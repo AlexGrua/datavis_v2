@@ -1,0 +1,44 @@
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+{% if messages %}
+    <ul class="message-list">
+        {% for message in messages %}
+            <li class="alert alert-danger">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %} 
+
+            <h4>Upload Excel File</h4>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Upload Excel File</button>
+            </form>
+
+
+            <hr>
+
+    
+            <h4>Enter URL for Google Sheets</h4>
+            <p>To upload data from Google Sheets:</p>
+            <ol>
+                <li>Open your Google Sheet.</li>
+                <li>Click on "Share" and make sure the link is accessible to anyone with the link.</li>
+                <li>Copy the link below and paste it in the field provided.</li>
+            </ol>
+
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="google_sheets_link">Google Sheets Link</label>
+                    <input type="text" name="google_sheets_link" id="google_sheets_link" class="form-control" placeholder="Enter Google Sheets link here">
+                </div>
+                
+                <button type="submit" class="btn btn-success">Fetch Data from Google Sheets</button>
+            </form>
+
+{% endblock %}

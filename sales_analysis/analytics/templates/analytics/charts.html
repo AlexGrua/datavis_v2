@@ -1,0 +1,137 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+{% load static %}  
+
+{% if file_id %}
+<div class="text-center my-3">
+    <a href="{% url 'upload' %}" class="btn btn-outline-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Upload</a>
+    <a href="{% url 'process_file' file_id=file_id %}" class="btn btn-outline-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Select your Data</a> 
+    <a href="{% url 'charts' file_id=file_id %}" class="btn btn-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Charts</a> 
+    <a href="{% url 'dashboard' file_id=file_id %}" class="btn btn-outline-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Visualization</a> 
+</div>
+{% else %}
+<div class="text-center my-3">
+    <a href="{% url 'upload' %}" class="btn btn-primary mx-2 btn-lg" style='width: 250px; height: 50px'>Upload</a>
+</div>
+{% endif %}
+
+<hr style="border: 2px black; border-style: dashed;">
+<hr class="my-3">
+
+<form method="POST">
+    {% csrf_token %}
+
+    <div class="form-group" style="display: flex; flex-wrap: wrap; justify-content: flex-start;">
+        <div class="form-check" style="font-size: 26px; margin: 20px; display: flex; flex-direction: column; align-items: center; max-width: 300px;">
+            <img src="{% static 'images/line_chart.png' %}" alt="Line Chart Icon" style="height: 200px; width: 300px; margin-bottom: 10px;" onclick="toggleCheckbox('lineChart')">
+            <div style="display: flex; align-items: center;">
+                <input class="form-check-input" type="checkbox" name="visualization_type" value="line_chart" id="lineChart" style="margin-right: 5px;">
+                <label class="form-check-label" for="lineChart">Line Chart</label>
+            </div>
+        </div>
+        <div class="form-check" style="font-size: 26px; margin: 20px; display: flex; flex-direction: column; align-items: center; max-width: 300px;">
+            <img src="{% static 'images/pie_chart.png' %}" alt="Pie Chart Icon" style="height: 200px; width: 300px; margin-bottom: 10px;" onclick="toggleCheckbox('pieChart')">
+            <div style="display: flex; align-items: center;">
+                <input class="form-check-input" type="checkbox" name="visualization_type" value="pie_chart" id="pieChart" style="margin-right: 5px;">
+                <label class="form-check-label" for="pieChart">Pie Chart</label>
+            </div>
+        </div>
+        <div class="form-check" style="font-size: 26px; margin: 20px; display: flex; flex-direction: column; align-items: center; max-width: 300px;">
+            <img src="{% static 'images/column_chart.png' %}" alt="Column Chart Icon" style="height: 200px; width: 300px; margin-bottom: 10px;" onclick="toggleCheckbox('columnChart')">
+            <div style="display: flex; align-items: center;">
+                <input class="form-check-input" type="checkbox" name="visualization_type" value="column_chart" id="columnChart" style="margin-right: 5px;">
+                <label class="form-check-label" for="columnChart">Column Chart</label>
+            </div>
+        </div>
+        <div class="form-check" style="font-size: 26px; margin: 20px; display: flex; flex-direction: column; align-items: center; max-width: 300px;">
+            <img src="{% static 'images/bubble_chart.png' %}" alt="Bubble Chart Icon" style="height: 200px; width: 300px; margin-bottom: 10px;" onclick="toggleCheckbox('bubbleChart')">
+            <div style="display: flex; align-items: center;">
+                <input class="form-check-input" type="checkbox" name="visualization_type" value="bubble_chart" id="bubbleChart" style="margin-right: 5px;">
+                <label class="form-check-label" for="bubbleChart">Bubble Chart</label>
+            </div>
+        </div>
+        <div class="form-check" style="font-size: 26px; margin: 20px; display: flex; flex-direction: column; align-items: center; max-width: 300px;">
+            <img src="{% static 'images/histogram.png' %}" alt="Histogram Icon" style="height: 200px; width: 300px; margin-bottom: 10px;" onclick="toggleCheckbox('histogram')">
+            <div style="display: flex; align-items: center;">
+                <input class="form-check-input" type="checkbox" name="visualization_type" value="histogram" id="histogram" style="margin-right: 5px;">
+                <label class="form-check-label" for="histogram">Histogram</label>
+            </div>
+        </div>
+        <div class="form-check" style="font-size: 26px; margin: 20px; display: flex; flex-direction: column; align-items: center; max-width: 300px;">
+            <img src="{% static 'images/pivot_table.png' %}" alt="Pivot Table Icon" style="height: 200px; width: 300px; margin-bottom: 10px;" onclick="toggleCheckbox('pivotTable')">
+            <div style="display: flex; align-items: center;">
+                <input class="form-check-input" type="checkbox" name="visualization_type" value="pivot_table" id="pivotTable" style="margin-right: 5px;">
+                <label class="form-check-label" for="pivotTable">Pivot Table</label>
+            </div>
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 20px;">
+        <button type="submit" class="btn btn-dark mx-2 btn-lg" style="color: aqua";">Generate Visualization</button>
+    </div>
+</form>
+
+<script>
+    function toggleCheckbox(checkboxId) {
+        const checkbox = document.getElementById(checkboxId);
+        checkbox.checked = !checkbox.checked; // Toggle the checkbox state
+    }
+</script>
+
+
+
+<div id="visualization-container">
+    <!-- Place for the visualizations -->
+    {% if line_graphs %}
+        <h3>Line Charts</h3>
+        {% for graph in line_graphs %}
+            <div>{{ graph|safe }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% if pivot_jsons %}
+        <h3>Pivot Tables</h3>
+        {% for key, data in pivot_jsons.items %}
+            <h4>{{ key }} Pivot Table</h4>
+            <div id="{{ key|slugify }}"></div>
+            <script>
+                const data = {{ data|safe }};
+                createPlotlyTable(data, '{{ key|slugify }}');
+            </script>
+        </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<script type="text/javascript">
+    function createPlotlyTable(data, divId) {
+        const header = Object.keys(data[0]); // Get column names from the first record
+        const values = header.map(key => data.map(row => row[key])); // Get values for each column
+
+        const table = {
+            type: 'table',
+            header: {
+                values: header,
+                fill: { color: 'paleturquoise' },
+                align: 'center',
+            },
+            cells: {
+                values: values,
+                fill: { color: 'lavender' },
+                align: 'left'
+            }
+        };
+
+        const layout = {
+            title: 'Pivot Table',
+            height: 720,
+            width: 1200,
+            margin: { l: 30, r: 30, t: 50, b: 30 },
+        };
+
+        Plotly.newPlot(divId, [table], layout);
+    }
+</script>
+
+{% endblock %}

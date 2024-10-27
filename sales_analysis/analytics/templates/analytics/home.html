@@ -1,0 +1,35 @@
+{% extends "base_generic.html" %}
+
+{% load static %}  <!-- Load static files -->
+
+{% block content %}
+
+<h2 class="text-center">Welcome to the Data Vis!</h2>
+
+<hr class="my-3">
+<hr class="my-3">
+<hr class="my-3">
+
+
+
+<h4>It’s easy as 1-2-3 to visualize your Sales Data for deep analysis:</h4>
+<hr class="my-3">
+
+<ol style="font-size: 24px;">
+    <li><a class="btn btn-danger" href="{% url 'signup' %}">Sign up</a> or <a class="btn btn-primary" href="{% url 'login' %}?next={{ upload }}">Log in</a> first</li>
+    <li>Go to <a href="{% url 'upload' %}">Upload Files</a> section and upload your Excel file or provide a link to Google Sheets</li>
+    <li>You will be transferred to the Dashboard section, where you can see all necessary tables and charts based on your Sales Data</li>
+</ol>
+
+<hr class="my-3">
+<p style="font-size: 20px;">Tips: Any time you need to return to your Charts, just go back to the Dashboard: you can see your last data provided (even from previous visits)</p>
+
+
+<div style="text-align: center">
+    <img src="{% static 'images/home1.png' %}" alt="Logo" style="height: 350px; width: 570px; margin-right: 20px;">
+    <img src="{% static 'images/home2.png' %}" alt="Logo" style="height: 350px; width: 570px; margin-right: 20px;">
+    <img src="{% static 'images/home3.png' %}" alt="Logo" style="height: 350px; width: 570px; margin-right: 20px;">
+</div>
+
+
+{% endblock %}
